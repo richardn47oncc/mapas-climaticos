@@ -1,0 +1,531 @@
+<!-- INICIO: DEMO COMPLETO - VERSIÓN CON DETECCIÓN DE LOGO -->
+<style>
+    .demo-container {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9999;
+        background: rgba(0, 0, 0, 0.94);
+        backdrop-filter: blur(12px);
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+        border: 2px solid #00cc00;
+        text-align: center;
+        width: 90%;
+        max-width: 950px;
+        animation: fadeInDemo 0.4s ease;
+    }
+
+    @keyframes fadeInDemo {
+        from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+        to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .demo-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.15);
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .logo-area {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .logo-oncc {
+        height: 50px;
+        width: auto;
+        border-radius: 10px;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        background: transparent;
+        object-fit: contain;
+    }
+
+    .demo-title {
+        color: white;
+        font-size: 1.25rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .demo-title span {
+        background: linear-gradient(135deg, #008000 0%, #00cc00 100%);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: normal;
+        letter-spacing: 0.5px;
+    }
+
+    .close-demo {
+        background: rgba(255,255,255,0.1);
+        border: none;
+        color: white;
+        font-size: 22px;
+        cursor: pointer;
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .close-demo:hover {
+        background: rgba(255,0,0,0.7);
+        transform: scale(1.1);
+    }
+
+    /* Debug solo para logo (visible solo si hay error) */
+    .logo-debug {
+        position: fixed;
+        bottom: 10px;
+        left: 10px;
+        background: rgba(0,0,0,0.8);
+        color: #ffaa00;
+        font-size: 10px;
+        padding: 4px 8px;
+        border-radius: 5px;
+        z-index: 10000;
+        font-family: monospace;
+        display: none;
+    }
+
+    .demo-tabs {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        background: rgba(0,0,0,0.5);
+        padding: 8px;
+        border-radius: 50px;
+    }
+
+    .tab-indicator {
+        flex: 1;
+        padding: 8px 12px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 30px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.7);
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .tab-indicator.active {
+        background: linear-gradient(135deg, #006400 0%, #008000 100%);
+        color: white;
+        box-shadow: 0 0 15px rgba(0,128,0,0.4);
+        transform: scale(1.02);
+    }
+
+    .demo-image-area {
+        background: #0a0a0a;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        margin-bottom: 15px;
+        min-height: 450px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .demo-image-area img {
+        width: 100%;
+        height: auto;
+        max-height: 500px;
+        object-fit: contain;
+        display: block;
+        transition: opacity 0.2s ease;
+    }
+
+    .demo-controls {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin: 15px 0;
+        flex-wrap: wrap;
+    }
+
+    .demo-btn {
+        background: linear-gradient(135deg, #006400 0%, #008000 100%);
+        color: white;
+        border: none;
+        padding: 8px 24px;
+        border-radius: 40px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+    }
+
+    .demo-btn:hover {
+        transform: scale(1.05);
+        background: linear-gradient(135deg, #007a00 0%, #009900 100%);
+        box-shadow: 0 4px 12px rgba(0,128,0,0.4);
+    }
+
+    .demo-btn.stop {
+        background: linear-gradient(135deg, #8b0000 0%, #b22222 100%);
+    }
+
+    .demo-btn.stop:hover {
+        background: linear-gradient(135deg, #a00000 0%, #cc0000 100%);
+    }
+
+    .demo-info {
+        color: #ccc;
+        font-size: 0.85rem;
+        margin-top: 10px;
+        font-family: monospace;
+        letter-spacing: 0.5px;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 4px;
+        background: #333;
+        border-radius: 2px;
+        margin-top: 12px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, #00cc00, #66ff66);
+        border-radius: 2px;
+        transition: width 0.1s linear;
+    }
+
+    .ciclo-info {
+        margin-top: 8px;
+        font-size: 0.7rem;
+        color: #88ff88;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .loading-indicator {
+        position: absolute;
+        color: white;
+        background: rgba(0,0,0,0.7);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        pointer-events: none;
+    }
+
+    @media (max-width: 700px) {
+        .demo-container { padding: 15px; width: 95%; }
+        .logo-oncc { height: 35px; }
+        .demo-title { font-size: 0.85rem; }
+        .tab-indicator { padding: 5px 8px; font-size: 0.7rem; }
+        .demo-btn { padding: 6px 16px; font-size: 0.8rem; }
+        .demo-image-area { min-height: 300px; }
+        .demo-image-area img { max-height: 350px; }
+        .ciclo-info { font-size: 0.55rem; }
+    }
+</style>
+
+<div class="demo-container" id="demoAnimado">
+    <div class="demo-header">
+        <div class="logo-area" id="logoArea">
+            <!-- Intentamos múltiples rutas del logo mediante JavaScript -->
+            <img id="logoOncc" class="logo-oncc" style="display: none;">
+            <div class="demo-title">
+                Observatorio Nacional de la Crisis Climática
+                <span>Previsiones Meteorológicas Proxomos 7 Días</span>
+            </div>
+        </div>
+        <button class="close-demo" id="closeDemoBtn">✕</button>
+    </div>
+
+    <div class="demo-tabs" id="tabIndicators">
+        <div class="tab-indicator" data-categoria="precip">🌧️ Precipitaciones Estimadas</div>
+        <div class="tab-indicator" data-categoria="temp-max">🔥  Temperaturas Máximas Estimadas</div>
+        <div class="tab-indicator" data-categoria="temp-min">❄️ Temperaturas Mínimas Estimadas</div>
+    </div>
+
+    <div class="demo-image-area">
+        <img id="demoImagen" src="" alt="Mapa de Previsión Climática">
+        <div id="loadingMsg" class="loading-indicator" style="display: none;">Cargando...</div>
+    </div>
+
+    <div class="demo-controls">
+        <button class="demo-btn" id="playBtn">▶ Reproducir</button>
+        <button class="demo-btn stop" id="pauseBtn">⏸ Pausar</button>
+        <button class="demo-btn" id="resetBtn">🔄 Reiniciar</button>
+    </div>
+
+    <div class="demo-info">
+        📍 <span id="frameInfo">Precipitación - 24 hrs</span>
+    </div>
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="ciclo-info">
+        🔄 Reproducción automática: 🌧️ → 🔥 → ❄️ → 🌧️
+    </div>
+</div>
+
+<!-- Debug temporal para verificar el logo -->
+<div id="logoDebug" class="logo-debug"></div>
+
+<script>
+    (function() {
+        // ========== INTENTAR CARGAR EL LOGO CON MÚLTIPLES RUTAS ==========
+        const rutasLogo = [
+            "OnccWeb/imagenes/oncc04-sinfondo.png",
+            "./OnccWeb/imagenes/oncc04-sinfondo.png",
+            "../OnccWeb/imagenes/oncc04-sinfondo.png",
+            "imagenes/oncc04-sinfondo.png",
+            "/OnccWeb/imagenes/oncc04-sinfondo.png",
+            "OnccWeb/imagenes/oncc04.png",
+            "OnccWeb/imagenes/oncc04.jpg"
+        ];
+        
+        const logoImg = document.getElementById('logoOncc');
+        const debugDiv = document.getElementById('logoDebug');
+        let logoEncontrado = false;
+        
+        function probarRutaLogo(index) {
+            if (index >= rutasLogo.length) {
+                debugDiv.innerHTML = "❌ LOGO NO ENCONTRADO - Verifica que el archivo exista en: OnccWeb/imagenes/oncc04-sinfondo.png";
+                debugDiv.style.display = "block";
+                setTimeout(() => {
+                    debugDiv.style.display = "none";
+                }, 8000);
+                return;
+            }
+            
+            const ruta = rutasLogo[index];
+            debugDiv.innerHTML = `🔍 Probando: ${ruta}`;
+            debugDiv.style.display = "block";
+            
+            const testImg = new Image();
+            testImg.onload = function() {
+                logoImg.src = ruta;
+                logoImg.style.display = "block";
+                logoEncontrado = true;
+                debugDiv.innerHTML = `✅ LOGO CARGADO: ${ruta}`;
+                debugDiv.style.background = "rgba(0,128,0,0.8)";
+                setTimeout(() => {
+                    debugDiv.style.display = "none";
+                }, 3000);
+                console.log("✅ Logo cargado desde:", ruta);
+            };
+            testImg.onerror = function() {
+                probarRutaLogo(index + 1);
+            };
+            testImg.src = ruta;
+        }
+        
+        // Iniciar búsqueda del logo
+        probarRutaLogo(0);
+        
+        // ========== CONFIGURACIÓN DE CATEGORÍAS ==========
+        const categoriasLista = ['precip', 'temp-max', 'temp-min'];
+        
+        const categorias = {
+            'precip': {
+                nombre: 'Precipitaciones para las Próximas',
+                icono: '🌧️',
+                archivos: ['prec024.jpg', 'prec048.jpg', 'prec072.jpg', 'prec096.jpg', 'prec120.jpg', 'prec144.jpg', 'prec168.jpg'],
+                titulos: ['24 hrs', '48 hrs', '72 hrs', '96 hrs', '120 hrs', '144 hrs', '168 hrs']
+            },
+            'temp-max': {
+                nombre: 'Temperaturas Máximas para las Próximas',
+                icono: '🔥',
+                archivos: ['temp024.jpg', 'temp048.jpg', 'temp072.jpg', 'temp096.jpg', 'temp120.jpg', 'temp144.jpg', 'temp168.jpg'],
+                titulos: ['24 hrs', '48 hrs', '72 hrs', '96 hrs', '120 hrs', '144 hrs', '168 hrs']
+            },
+            'temp-min': {
+                nombre: 'Temperaturas Mínimas para las Próximas:',
+                icono: '❄️',
+                archivos: ['Tmin024.jpg', 'Tmin048.jpg', 'Tmin072.jpg', 'Tmin096.jpg', 'Tmin120.jpg', 'Tmin144.jpg', 'Tmin168.jpg'],
+                titulos: ['24 hrs', '48 hrs', '72 hrs', '96 hrs', '120 hrs', '144 hrs', '168 hrs']
+            }
+        };
+
+        const rutaBase = 'mapas/prevision/';
+        
+        let categoriaActual = 'precip';
+        let categoriaIndex = 0;
+        let currentIndex = 0;
+        let intervalId = null;
+        let isPlaying = true;
+        let imageCache = {};
+        let esperandoCambioCategoria = false;
+        
+        const demoImagen = document.getElementById('demoImagen');
+        const frameInfoSpan = document.getElementById('frameInfo');
+        const progressFill = document.getElementById('progressFill');
+        const loadingMsg = document.getElementById('loadingMsg');
+        const tabIndicators = document.querySelectorAll('.tab-indicator');
+        
+        function actualizarIndicadores() {
+            tabIndicators.forEach((indicator, idx) => {
+                const cat = categoriasLista[idx];
+                if (cat === categoriaActual) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
+        }
+        
+        function cambiarASiguienteCategoria() {
+            if (!isPlaying) return;
+            
+            const siguienteIndex = (categoriaIndex + 1) % categoriasLista.length;
+            const siguienteCategoria = categoriasLista[siguienteIndex];
+            
+            categoriaActual = siguienteCategoria;
+            categoriaIndex = siguienteIndex;
+            currentIndex = 0;
+            
+            actualizarIndicadores();
+            actualizarImagen();
+        }
+        
+        function precargarCategoria(categoria) {
+            const data = categorias[categoria];
+            if (!data) return;
+            
+            if (!imageCache[categoria]) {
+                imageCache[categoria] = {};
+            }
+            
+            data.archivos.forEach(archivo => {
+                const url = rutaBase + archivo;
+                const img = new Image();
+                img.onload = () => { imageCache[categoria][archivo] = url; };
+                img.onerror = () => { imageCache[categoria][archivo] = null; };
+                img.src = url;
+            });
+        }
+        
+        function precargarTodas() {
+            Object.keys(categorias).forEach(cat => precargarCategoria(cat));
+        }
+        
+        function actualizarImagen() {
+            const data = categorias[categoriaActual];
+            if (!data) return;
+            
+            const archivo = data.archivos[currentIndex];
+            const titulo = data.titulos[currentIndex];
+            const url = imageCache[categoriaActual]?.[archivo];
+            
+            if (url) {
+                demoImagen.src = url;
+                loadingMsg.style.display = 'none';
+                frameInfoSpan.innerHTML = `${data.icono} ${data.nombre}: ${titulo}`;
+                const porcentaje = ((currentIndex + 1) / data.archivos.length) * 100;
+                progressFill.style.width = `${porcentaje}%`;
+            } else {
+                const urlDirecta = rutaBase + archivo;
+                demoImagen.src = urlDirecta;
+                frameInfoSpan.innerHTML = `${data.icono} ${data.nombre} : ${titulo}`;
+                
+                const imgTest = new Image();
+                imgTest.onload = () => {
+                    if (imageCache[categoriaActual]) {
+                        imageCache[categoriaActual][archivo] = urlDirecta;
+                    }
+                    loadingMsg.style.display = 'none';
+                };
+                imgTest.src = urlDirecta;
+            }
+        }
+        
+        function siguienteFrame() {
+            const data = categorias[categoriaActual];
+            if (!data) return;
+            
+            const esUltimoFrame = (currentIndex + 1) >= data.archivos.length;
+            
+            if (esUltimoFrame) {
+                if (!esperandoCambioCategoria) {
+                    esperandoCambioCategoria = true;
+                    cambiarASiguienteCategoria();
+                    setTimeout(() => { esperandoCambioCategoria = false; }, 500);
+                }
+            } else {
+                currentIndex++;
+                actualizarImagen();
+            }
+        }
+        
+        function iniciarReproduccion() {
+            if (intervalId) clearInterval(intervalId);
+            intervalId = setInterval(() => { siguienteFrame(); }, 1000);
+            isPlaying = true;
+        }
+        
+        function pausarReproduccion() {
+            if (intervalId) { clearInterval(intervalId); intervalId = null; }
+            isPlaying = false;
+        }
+        
+        function reiniciar() {
+            pausarReproduccion();
+            categoriaActual = 'precip';
+            categoriaIndex = 0;
+            currentIndex = 0;
+            actualizarIndicadores();
+            actualizarImagen();
+            if (isPlaying) { iniciarReproduccion(); }
+        }
+        
+        function cerrarDemo() {
+            pausarReproduccion();
+            const demoDiv = document.getElementById('demoAnimado');
+            if (demoDiv) { demoDiv.style.display = 'none'; }
+        }
+        
+        function configurarBotones() {
+            document.getElementById('playBtn').addEventListener('click', () => { if (!isPlaying) iniciarReproduccion(); });
+            document.getElementById('pauseBtn').addEventListener('click', () => { if (isPlaying) pausarReproduccion(); });
+            document.getElementById('resetBtn').addEventListener('click', reiniciar);
+            document.getElementById('closeDemoBtn').addEventListener('click', cerrarDemo);
+        }
+        
+        function inicializar() {
+            precargarTodas();
+            configurarBotones();
+            actualizarIndicadores();
+            actualizarImagen();
+            iniciarReproduccion();
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrarDemo(); });
+        }
+        
+        inicializar();
+    })();
+</script>
+<!-- FIN: DEMO CON DETECCIÓN DE LOGO -->
